@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="vim-elisp engineering report — how the Vim / Neovim Emacs Lisp plugin is built: standalone syntax grammar mirrored from the elisprs LSP corpus, Lisp indentation via lispwords, run wiring through elisp, and the vim-lsp / nvim-dap contract with elisp --lsp / --dap.">
+  <title>vim-elisp — Engineering Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="hud-static.css">
+  <link rel="stylesheet" href="tutorial.css">
+  <style>
+    .tutorial-main { max-width: 68rem; margin: 0 auto; padding: 1.5rem; }
+    pre { overflow-x: auto; padding: 0.8rem 1rem; border: 1px solid var(--border); border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <main class="tutorial-main">
+    <h1>vim-elisp — Engineering Report</h1>
+
+    <h2>Grammar is mirrored, not guessed</h2>
+    <p>The syntax grammar in <code>syntax/elisp.vim</code> is built from the
+      elisprs language server's own corpus (<code>src/lsp.rs</code>:
+      <code>SPECIAL_FORMS</code> + <code>SUBRS</code>). The 18 special forms and
+      the built-in subr set that Vim highlights are exactly the surface the
+      language server knows, so highlighting and completion stay in agreement.</p>
+
+    <h2>Lisp indentation</h2>
+    <p>Emacs Lisp is an S-expression language, so indentation is delegated to
+      Vim's built-in <code>lisp</code> indenter rather than a brace-column rule.
+      <code>lispwords</code> is populated with the special forms plus common
+      binders (<code>let</code>, <code>when</code>, <code>dolist</code>,
+      <code>save-excursion</code>, …) so their bodies indent by a fixed offset.</p>
+
+    <h2>Run wiring</h2>
+    <p>There is no separate lint / parse-only mode: <code>elisp FILE.el</code>
+      lowers the file to fusevm bytecode and evaluates it, surfacing parse and
+      runtime errors alike. <code>:make</code> and <code>:ElispRun</code> both
+      route through <code>elisp %</code> into the quickfix list.</p>
+
+    <h2>LSP / DAP contract</h2>
+    <p>The language server and debug adapter are launched with only
+      <code>--lsp</code> or <code>--dap</code> — never with an appended
+      <code>--stdio</code>, which the binary rejects before the JSON-RPC
+      handshake. The plugin registers <code>elisp --lsp</code> with vim-lsp and
+      documents coc.nvim and nvim-dap configurations.</p>
+
+    <pre><code>elisp FILE.el   evaluate a file (lowered to fusevm, run on fusevm)
+elisp -e EXPR   evaluate an expression and print its value
+elisp --lsp     language server over stdio
+elisp --dap     debug adapter over stdio</code></pre>
+
+    <p><a href="index.html">Back to documentation</a> &middot;
+       <a href="https://github.com/MenkeTechnologies/vim-elisp" target="_blank" rel="noopener">Source on GitHub</a></p>
+  </main>
+  <script src="hud-theme.js"></script>
+</body>
+</html>

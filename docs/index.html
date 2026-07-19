@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="vim-elisp — Vim / Neovim support for Emacs Lisp (the elisprs runtime). Filetype detection for *.el, .emacs / _emacs and elisp shebangs, a standalone Emacs Lisp syntax grammar (special forms + built-in subrs), Lisp-aware indentation, :make / :ElispRun wiring through elisp, and vim-lsp / coc.nvim registration via elisp --lsp plus nvim-dap via elisp --dap.">
+  <title>vim-elisp — Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="hud-static.css">
+  <link rel="stylesheet" href="tutorial.css">
+  <style>
+    .tutorial-main { max-width: 68rem; margin: 0 auto; padding: 1.5rem; }
+    .feature-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 13px; }
+    .feature-table th, .feature-table td { text-align: left; padding: 6px 10px; border: 1px solid var(--border); }
+    .feature-table th { color: var(--cyan); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 10px; }
+    pre { overflow-x: auto; padding: 0.8rem 1rem; border: 1px solid var(--border); border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <main class="tutorial-main">
+    <h1>vim-elisp</h1>
+    <p>Vim / Neovim support for <strong>Emacs Lisp</strong>, targeting
+      <a href="https://github.com/MenkeTechnologies/elisprs" target="_blank" rel="noopener">elisprs</a> —
+      an Emacs Lisp implementation written in Rust that lowers <code>.el</code> to the
+      <a href="https://github.com/MenkeTechnologies/fusevm" target="_blank" rel="noopener">fusevm</a>
+      bytecode VM with a three-tier Cranelift JIT.</p>
+
+    <h2>Feature matrix</h2>
+    <table class="feature-table">
+      <thead><tr><th>Capability</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>Filetype detection</td><td><code>*.el</code>, <code>.emacs</code>, <code>_emacs</code>, <code>elisp</code> shebang</td></tr>
+        <tr><td>Syntax highlighting</td><td>standalone <code>syntax/elisp.vim</code> (special forms + subrs)</td></tr>
+        <tr><td>Indentation</td><td>Vim built-in <code>lisp</code> indenter + <code>lispwords</code></td></tr>
+        <tr><td>Run / <code>:make</code></td><td><code>elisp %</code> (evaluate the file)</td></tr>
+        <tr><td>Language server</td><td>vim-lsp / coc.nvim via <code>elisp --lsp</code></td></tr>
+        <tr><td>Debug adapter</td><td>nvim-dap via <code>elisp --dap</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Install</h2>
+    <pre><code>" vim-plug
+Plug 'MenkeTechnologies/vim-elisp'
+
+# backend binary
+brew install menketechnologies/menketech/elisprs</code></pre>
+
+    <h2>Syntax token categories</h2>
+    <ul>
+      <li>Comments (<code>;</code>), shebang, TODO / FIXME markers</li>
+      <li>Strings, char literals (<code>?a</code>, <code>?\C-x</code>), keyword symbols (<code>:foo</code>)</li>
+      <li>Quote sugar: <code>'</code> <code>`</code> <code>,</code> <code>,@</code> <code>#'</code></li>
+      <li>Numbers, including <code>#x</code> / <code>#o</code> / <code>#b</code> radices and floats</li>
+      <li>The 18 special forms (<code>defun</code>, <code>let</code>, <code>cond</code>, <code>lambda</code>, …)</li>
+      <li>The built-in subr set exposed by the elisp LSP corpus</li>
+      <li>Names introduced by <code>defun</code> / <code>defmacro</code> / <code>defvar</code> / <code>defconst</code></li>
+    </ul>
+
+    <h2>Run, lint, and language server</h2>
+    <pre><code>:ElispRun     " evaluate the current file via elisp
+:make         " same, into the quickfix list</code></pre>
+    <p>elisprs has no separate lint mode — evaluating a file with
+      <code>elisp FILE.el</code> surfaces both parse and runtime errors.
+      Live diagnostics come from the language server (<code>elisp --lsp</code>),
+      registered automatically with vim-lsp.</p>
+
+    <h2>Debug adapter</h2>
+    <pre><code>local dap = require('dap')
+dap.adapters.elisp = { type = 'executable', command = 'elisp', args = { '--dap' } }
+dap.configurations.elisp = {
+  { type = 'elisp', request = 'launch', name = 'Run Emacs Lisp program', program = '${file}' },
+}</code></pre>
+
+    <p><a href="report.html">Engineering report</a> &middot;
+       <a href="https://github.com/MenkeTechnologies/vim-elisp" target="_blank" rel="noopener">Source on GitHub</a></p>
+  </main>
+  <script src="hud-theme.js"></script>
+</body>
+</html>

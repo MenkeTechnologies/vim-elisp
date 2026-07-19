@@ -1,0 +1,100 @@
+*elisp.txt*   Syntax, filetype, indent, running and LSP support for Emacs Lisp (elisprs)
+
+                              vim-elisp manual
+
+==============================================================================
+CONTENTS                                                        *vim-elisp*
+
+    1. Introduction ........................... |vim-elisp-intro|
+    2. Installation ........................... |vim-elisp-install|
+    3. Filetype detection ..................... |vim-elisp-ftdetect|
+    4. Syntax highlighting .................... |vim-elisp-syntax|
+    5. Running (:make / :ElispRun) ............ |vim-elisp-run|
+    6. Language server (LSP) .................. |vim-elisp-lsp|
+    7. Debug adapter (DAP) .................... |vim-elisp-dap|
+    8. Options ................................ |vim-elisp-options|
+
+==============================================================================
+1. INTRODUCTION                                           *vim-elisp-intro*
+
+vim-elisp adds Vim / Neovim support for Emacs Lisp, targeting elisprs — an
+Emacs Lisp implementation written in Rust that lowers `.el` to the fusevm
+bytecode VM with a three-tier Cranelift JIT. It provides:
+
+    - filetype detection for *.el files, .emacs / _emacs, and elisp shebangs
+    - standalone Emacs Lisp syntax highlighting (special forms + built-in subrs)
+    - Lisp-aware indentation via Vim's built-in `lisp` indenter and `lispwords`
+    - `:make` / `:ElispRun` wiring through the elisp binary
+    - vim-lsp / coc.nvim registration via `elisp --lsp`
+    - nvim-dap guidance via `elisp --dap`
+
+==============================================================================
+2. INSTALLATION                                         *vim-elisp-install*
+
+pathogen (https://github.com/tpope/vim-pathogen): >
+    cd ~/.vim/bundle
+    git clone https://github.com/MenkeTechnologies/vim-elisp
+<
+Then generate help tags: >
+    :Helptags
+<
+vim-plug (https://github.com/junegunn/vim-plug): >
+    Plug 'MenkeTechnologies/vim-elisp'
+<
+Install the elisp binary: >
+    brew install menketechnologies/menketech/elisprs
+<
+
+==============================================================================
+3. FILETYPE DETECTION                                   *vim-elisp-ftdetect*
+
+Files with a *.el extension, the Emacs init files `.emacs` and `_emacs`, and
+extensionless scripts whose first line is an `elisp` shebang are set to
+filetype `elisp`. This overrides Vim's built-in detection of *.el as `lisp`.
+
+==============================================================================
+4. SYNTAX HIGHLIGHTING                                    *vim-elisp-syntax*
+
+syntax/elisp.vim is a standalone Emacs Lisp grammar covering the surface the
+elisp language server exposes (src/lsp.rs SPECIAL_FORMS + SUBRS): comments,
+strings, char literals (?a), keyword symbols (:foo), quote sugar (' ` , ,@ #'),
+numbers (including #x / #o / #b), the 18 special forms, the built-in subr set,
+and the names introduced by defun / defmacro / defvar / defconst.
+
+==============================================================================
+5. RUNNING (:make / :ElispRun)                              *vim-elisp-run*
+
+`:make` runs the current file through the elisp compiler wiring
+(compiler/elisp.vim), which evaluates it with `elisp %`. elisprs has no
+separate lint mode — evaluating the file surfaces parse and runtime errors
+into the quickfix list.
+
+`:ElispRun [args]` evaluates the current file directly via `elisp`. The
+default mapping <LocalLeader>r invokes it. Disable the mapping with: >
+    let g:vim_elisp_no_maps = 1
+<
+
+==============================================================================
+6. LANGUAGE SERVER (LSP)                                    *vim-elisp-lsp*
+
+plugin/elisp.vim registers `elisp --lsp` with vim-lsp when available. The
+server MUST be launched with only `--lsp` (no appended `--stdio`). For
+coc.nvim, add an `elisp` entry to coc-settings.json (see plugin/elisp.vim).
+Disable vim-lsp registration with: >
+    let g:vim_elisp_no_lsp = 1
+<
+
+==============================================================================
+7. DEBUG ADAPTER (DAP)                                      *vim-elisp-dap*
+
+elisprs ships a Debug Adapter over stdio (`elisp --dap`). See plugin/elisp.vim
+for an nvim-dap configuration. As with the LSP, pass only `--dap`.
+
+==============================================================================
+8. OPTIONS                                              *vim-elisp-options*
+
+    g:vim_elisp_no_maps    when 1, skip the <LocalLeader>r mapping
+    g:vim_elisp_no_lsp     when 1, skip the vim-lsp server registration
+
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:
