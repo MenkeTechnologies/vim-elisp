@@ -75,7 +75,7 @@ brew install menketechnologies/menketech/elisprs
 - Strings, char literals (`?a`, `?\C-x`), keyword symbols (`:foo`)
 - Quote sugar: `'`, `` ` ``, `,`, `,@`, `#'`
 - Numbers, including `#x` / `#o` / `#b` radices and floats
-- The 18 special forms (`defun`, `let`, `cond`, `lambda`, ...)
+- The special forms (`defun`, `let`, `cond`, `lambda`, ...)
 - The built-in subr set exposed by the elisp LSP corpus
 - Names introduced by `defun` / `defmacro` / `defvar` / `defconst`
 

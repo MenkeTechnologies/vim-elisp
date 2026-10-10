@@ -58,7 +58,7 @@ filetype `elisp`. This overrides Vim's built-in detection of *.el as `lisp`.
 syntax/elisp.vim is a standalone Emacs Lisp grammar covering the surface the
 elisp language server exposes (src/lsp.rs SPECIAL_FORMS + SUBRS): comments,
 strings, char literals (?a), keyword symbols (:foo), quote sugar (' ` , ,@ #'),
-numbers (including #x / #o / #b), the 18 special forms, the built-in subr set,
+numbers (including #x / #o / #b), the special forms, the built-in subr set,
 and the names introduced by defun / defmacro / defvar / defconst.
 
 ==============================================================================
